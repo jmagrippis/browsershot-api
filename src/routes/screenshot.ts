@@ -1,4 +1,5 @@
 import puppeteer, {type Browser} from 'puppeteer'
+
 import type {FastifyInstance, RouteShorthandOptions} from 'fastify'
 
 const routeOptions: RouteShorthandOptions = {
@@ -27,7 +28,7 @@ export const setupRoute = (server: FastifyInstance) =>
       try {
         browser = await puppeteer.launch({headless: true})
         const page = await browser.newPage()
-        page.setViewport({width: 1200, height: 630})
+        await page.setViewport({width: 1200, height: 630})
         const url = request.query.url
 
         if (!url || !url.startsWith('http')) {
@@ -42,6 +43,8 @@ export const setupRoute = (server: FastifyInstance) =>
 
         reply.type('image/png')
         reply.send(imageBuffer)
+      } catch (error) {
+        console.error(error)
       } finally {
         if (browser) {
           browser.close()
